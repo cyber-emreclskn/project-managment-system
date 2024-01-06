@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+    pms_backend:
+        build: .
+        command: python manage.py runserver 0.0.0.0:8000 --settings=core.settings.container
+        volumes:
+            - .:/usr/src/app/
+        ports:
+            - "127.0.0.1:8000:8000"
+        depends_on:
+            - postgres
+        env_file:
+            - ./.env
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+
+    redis:
+        container_name: pms_redis
+        image: "redis:alpine"
+
+    postgres:
+        container_name: pms_postgres
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile.postgres
+        volumes:
+          - postgres_data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        environment:
+          - POSTGRES_USER=pmsuser
+          - POSTGRES_PASSWORD=pmspassword
+          - POSTGRES_DB=pmsdb
+
+volumes:
+    postgres_data:
