@@ -41,4 +41,4 @@ jobs:
         run: |
           docker build -t pms-repo-001 .
           docker tag pms-repo-001:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && break || sleep 10
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
