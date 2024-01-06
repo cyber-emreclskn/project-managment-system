@@ -11,6 +11,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Update AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      - name: Update Docker
+        run: sudo apt-get update && sudo apt-get install -y docker-ce
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -18,14 +26,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
 
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Update AWS CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y awscli
 
 
       - name: Build, Tag, and Push the Image to Amazon ECR
@@ -37,4 +41,4 @@ jobs:
         run: |
           docker build -t pms-repo-001 .
           docker tag pms-repo-001:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && break || sleep 10
