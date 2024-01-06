@@ -5,20 +5,25 @@ FROM python:3.9
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# install system dependencies
-RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# create pms log directory and file
-WORKDIR /usr/src/app
+# Create the pms log directory
 RUN mkdir -p /var/log/django/
-RUN touch /var/log/django/pms.log
 
-# install python dependencies
-COPY requirements.txt ./
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Copy the requirements file separately to leverage Docker cache
+COPY requirements.txt .
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the project files to the container
-COPY . /app/
+COPY . /usr/src/app/
 
 # Expose port 8000 for the Django development server
 EXPOSE 8000
